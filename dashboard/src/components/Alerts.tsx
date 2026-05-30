@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Clock, Server, Check, X, ShieldAlert, FileCode } from 'lucide-react';
+import { Clock, Server, Check, X, ShieldAlert, FileCode } from 'lucide-react';
 
 interface Alert {
   id: number;

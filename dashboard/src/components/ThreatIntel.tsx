@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Database, AlertTriangle, ShieldCheck, RefreshCw, PlusCircle, CheckCircle } from 'lucide-react';
+import { AlertTriangle, ShieldCheck, RefreshCw, PlusCircle, CheckCircle } from 'lucide-react';
 
 interface ThreatIntelItem {
   id: number;

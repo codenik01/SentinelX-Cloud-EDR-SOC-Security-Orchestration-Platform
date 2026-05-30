@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Terminal, Globe, Key, FileText, Activity, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Terminal, Globe, Key, FileText, Activity } from 'lucide-react';
 
 interface EventItem {
   id: number;
