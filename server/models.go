@@ -6,7 +6,7 @@ import (
 
 // Host represents a registered endpoint agent.
 type Host struct {
-	HostID        string    `gorm:"primaryKey;column:host_id" json:"host_id"`
+	HostID        string    `gorm:"type:varchar(100);primaryKey;column:host_id" json:"host_id"`
 	Hostname      string    `gorm:"column:hostname;size:255" json:"hostname"`
 	OS            string    `gorm:"column:os;size:100" json:"os"`
 	Status        string    `gorm:"column:status;size:50" json:"status"` // "online", "offline"
@@ -18,7 +18,7 @@ type Host struct {
 // Event represents raw security telemetry logs ingested from the agents.
 type Event struct {
 	ID        uint      `gorm:"primaryKey;autoIncrement" json:"id"`
-	HostID    string    `gorm:"index;column:host_id" json:"host_id"`
+	HostID    string    `gorm:"type:varchar(100);index;column:host_id" json:"host_id"`
 	Timestamp time.Time `gorm:"index" json:"timestamp"`
 	Type      string    `gorm:"size:50" json:"type"` // "process", "network", "login", "file"
 	Payload   string    `gorm:"type:text" json:"payload"` // JSON serialized event data
@@ -27,8 +27,8 @@ type Event struct {
 // Alert represents a triggered security event flag.
 type Alert struct {
 	ID          uint      `gorm:"primaryKey;autoIncrement" json:"id"`
-	HostID      string    `gorm:"index;column:host_id" json:"host_id"`
-	Host        Host      `gorm:"foreignKey:HostID" json:"host"`
+	HostID      string    `gorm:"type:varchar(100);index;column:host_id" json:"host_id"`
+	Host        Host      `gorm:"foreignKey:HostID;references:HostID" json:"host"`
 	Title       string    `gorm:"size:255" json:"title"`
 	Description string    `gorm:"type:text" json:"description"`
 	Severity    string    `gorm:"size:50" json:"severity"` // "critical", "high", "medium", "low"

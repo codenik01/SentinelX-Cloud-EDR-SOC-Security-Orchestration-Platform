@@ -41,9 +41,22 @@ func InitDB() {
 
 	log.Println("[SentinelX-Server] Database connection successful. Running Auto-Migrations...")
 	
-	err = db.AutoMigrate(&Host{}, &Event{}, &Alert{}, &ThreatIntelItem{})
+	// Migrate models sequentially in dependency order
+	err = db.AutoMigrate(&Host{})
 	if err != nil {
-		log.Fatalf("[SentinelX-Server] AutoMigrate failed: %v", err)
+		log.Fatalf("[SentinelX-Server] Host Migrate failed: %v", err)
+	}
+	err = db.AutoMigrate(&Event{})
+	if err != nil {
+		log.Fatalf("[SentinelX-Server] Event Migrate failed: %v", err)
+	}
+	err = db.AutoMigrate(&Alert{})
+	if err != nil {
+		log.Fatalf("[SentinelX-Server] Alert Migrate failed: %v", err)
+	}
+	err = db.AutoMigrate(&ThreatIntelItem{})
+	if err != nil {
+		log.Fatalf("[SentinelX-Server] ThreatIntel Migrate failed: %v", err)
 	}
 
 	DB = db
