@@ -315,3 +315,39 @@ func GetTimeline(c *gin.Context) {
 
 	c.JSON(http.StatusOK, events)
 }
+
+// HandleThreatIntelSync adds external threat intel feed data
+func HandleThreatIntelSync(c *gin.Context) {
+	var req []struct {
+		IndicatorType string `json:"type" binding:"required"`
+		Value         string `json:"value" binding:"required"`
+		Source        string `json:"source"`
+		Description   string `json:"description"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	addedCount := 0
+	for _, item := range req {
+		intel := ThreatIntelItem{
+			IndicatorType: item.IndicatorType,
+			Value:         item.Value,
+			Source:        item.Source,
+			Description:   item.Description,
+			CreatedAt:     time.Now(),
+		}
+		// Try to create, skip if unique constraint fails
+		if err := DB.Create(&intel).Error; err == nil {
+			addedCount++
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":       "synchronized",
+		"synced_items": len(req),
+		"new_items":    addedCount,
+	})
+}

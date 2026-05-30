@@ -50,6 +50,7 @@ func main() {
 		api.PUT("/alerts/:id/resolve", ResolveAlert)
 		api.GET("/hosts", GetHosts)
 		api.GET("/timeline", GetTimeline)
+		api.POST("/threat-intel/sync", HandleThreatIntelSync)
 	}
 
 	port := os.Getenv("PORT")
