@@ -80,13 +80,4 @@ func runAgentMonitorHousekeeper() {
 	}
 }
 
-// Detection engine stubs to compile Commit 4 before writing rule analyzers
-func AnalyzeProcessEvent(hostID string, pe ProcessEvent, evtID uint) {}
-func AnalyzeNetworkEvent(hostID string, ne NetworkEvent, evtID uint) {}
-func AnalyzeLoginEvent(hostID string, le LoginEvent, evtID uint)     {}
-func AnalyzeFileEvent(hostID string, fe FileEvent, evtID uint)       {}
-
-// Redis stub to compile Commit 4
-func InitRedis() {
-	log.Println("[SentinelX-Server] Redis initialization stubbed for this commit.")
-}
+// Stubs removed - implemented in redis.go and detection.go
